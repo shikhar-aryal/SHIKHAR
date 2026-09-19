@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shikhar Aryal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#040504;
+    --bg-panel:#0a0d0a;
+    --bg-card:#10140f;
+    --green:#3ee888;
+    --white:#f7f8f6;
+    --yellow:#ffd35c;
+    --muted:#9aa39a;
+    --line:rgba(62,232,136,0.16);
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    height:100%;
+    background:#000;
+    font-family:'Manrope',sans-serif;
+    color:var(--white);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* ---------- FULL SCREEN SNAP CONTAINER ---------- */
+
+  .scroller{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    height:100dvh;
+    overflow-y:scroll;
+    scroll-snap-type:y mandatory;
+    scrollbar-width:none;
+    background:
+      radial-gradient(ellipse 55% 35% at 25% 15%, rgba(62,232,136,0.05), transparent 60%),
+      radial-gradient(ellipse 45% 35% at 85% 90%, rgba(62,232,136,0.07), transparent 60%),
+      linear-gradient(160deg, #050705 0%, #020302 55%, #060806 100%);
+  }
+  .scroller::-webkit-scrollbar{ display:none; }
+
+  .slide{
+    position:relative;
+    width:100%;
+    height:100vh;
+    height:100dvh;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  /* keep content readable on ultra-wide laptop screens */
+  .inner{
+    width:100%;
+    max-width:1300px;
+    margin:0 auto;
+    padding:0 6vw;
+  }
+
+  .deco{ position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
+  .deco span{ position:absolute; border-radius:50%; filter:blur(1px); opacity:0.5; }
+  .deco .b1{ width:220px; height:220px; top:-60px; right:-60px; background:radial-gradient(circle, rgba(62,232,136,0.3), transparent 70%); }
+  .deco .b2{ width:180px; height:180px; bottom:10%; left:-60px; background:radial-gradient(circle, rgba(62,232,136,0.22), transparent 70%); }
+  .deco .b3{ width:7px; height:7px; top:20%; left:10%; background:var(--green); box-shadow:0 0 12px 3px rgba(62,232,136,0.7); }
+  .deco .b4{ width:5px; height:5px; top:65%; right:14%; background:var(--green); box-shadow:0 0 10px 2px rgba(62,232,136,0.7); }
+  .deco svg.ring1{ position:absolute; top:10%; right:10%; width:70px; height:70px; opacity:0.45; }
+  .deco svg.tri{ position:absolute; bottom:14%; left:8%; width:34px; height:34px; opacity:0.4; }
+
+  /* ---------- SLIDE 1 : INTRO ---------- */
+
+  .s1-inner{
+    display:flex;
+    align-items:center;
+    gap:6vw;
+    position:relative;
+    z-index:2;
+  }
+
+  .s1-left{ flex:1.2; min-width:0; }
+
+  .headline{
+    font-family:'Rubik', sans-serif;
+    font-weight:800;
+    font-size:clamp(30px, 5.5vw, 62px);
+    line-height:1.18;
+    color:var(--yellow);
+    margin:0 0 24px 0;
+    max-width:14ch;
+  }
+
+  .subtext{
+    font-size:clamp(15px, 1.7vw, 21px);
+    line-height:1.65;
+    color:var(--white);
+    opacity:0.85;
+    font-weight:500;
+    max-width:38ch;
+  }
+
+  .s1-right{ flex:0.8; display:flex; justify-content:center; }
+
+  .clip-frame{
+    width:min(40vw, 380px);
+    aspect-ratio:9/14;
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    background:#000;
+    position:relative;
+    box-shadow:0 0 40px -10px rgba(62,232,136,0.35);
+  }
+
+  .clip-frame video{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .play-overlay{
+    position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.35); cursor:pointer; z-index:3;
+  }
+  .play-overlay.show{ display:flex; }
+  .play-overlay svg{ width:40px; height:40px; filter:drop-shadow(0 0 10px rgba(62,232,136,0.6)); }
+
+  .scroll-hint{
+    position:absolute;
+    bottom:32px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    color:var(--muted);
+    font-size:11px;
+    z-index:2;
+  }
+  .scroll-hint svg{ animation:bob 1.4s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(5px); } }
+
+  /* ---------- SLIDE 2 & 3 SHARED ---------- */
+
+  .section-title{
+    font-family:'Rubik', sans-serif;
+    font-weight:800;
+    font-size:clamp(26px, 3.4vw, 42px);
+    color:var(--white);
+    margin:0 0 32px 0;
+    position:relative;
+    z-index:2;
+  }
+  .section-title span{ color:var(--yellow); }
+
+  .grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:18px;
+    max-width:680px;
+    position:relative;
+    z-index:2;
+  }
+  @media (min-width:720px){
+    .grid{ grid-template-columns:1fr 1fr; max-width:1100px; }
+    .grid.single{ grid-template-columns:1fr; max-width:400px; }
+  }
+
+  .card{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    padding:22px;
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    text-decoration:none;
+    color:var(--white);
+    opacity:0;
+    transform:translateY(14px);
+    transition:border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .revealed .card{ animation:cardIn 0.5s ease forwards; }
+  .revealed .card:nth-child(1){ animation-delay:0.04s; }
+  .revealed .card:nth-child(2){ animation-delay:0.13s; }
+  .revealed .card:nth-child(3){ animation-delay:0.22s; }
+  .revealed .card:nth-child(4){ animation-delay:0.31s; }
+
+  @keyframes cardIn{ to{ opacity:1; transform:translateY(0); } }
+
+  .card:hover{ border-color:rgba(62,232,136,0.55); box-shadow:0 0 22px -6px rgba(62,232,136,0.4); }
+
+  .thumb{
+    width:64px; height:64px; flex-shrink:0; border-radius:14px;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    position:relative;
+  }
+  .thumb svg{ width:30px; height:30px; stroke:var(--green); fill:none; stroke-width:1.6; position:relative; z-index:2; }
+  .thumb.a{ background:linear-gradient(135deg, #123324, #060a07); }
+  .thumb.b{ background:linear-gradient(135deg, #1c6b45, #0a1f14); }
+  .thumb.c{ background:linear-gradient(135deg, #16442c, #08120c); }
+  .thumb.photo{ background-size:cover; background-position:center; }
+  .thumb.photo::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(135deg, rgba(4,8,5,0.55), rgba(4,8,5,0.25));
+    z-index:1;
+  }
+
+  .video-showcase{
+    display:flex;
+    align-items:center;
+    gap:26px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+    position:relative;
+    z-index:2;
+  }
+  .link-showcase{ text-decoration:none; color:inherit; cursor:pointer; }
+  .link-showcase:hover .web-shot-frame{ border-color:rgba(62,232,136,0.5); }
+  .edit-clip-frame{
+    width:130px;
+    aspect-ratio:9/16;
+    border-radius:14px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    background:#000;
+    box-shadow:0 0 24px -8px rgba(62,232,136,0.35);
+    flex-shrink:0;
+  }
+  .edit-clip-frame video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .web-shot-frame{
+    width:220px;
+    aspect-ratio:16/10;
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    background:#000;
+    box-shadow:0 0 24px -8px rgba(62,232,136,0.35);
+    flex-shrink:0;
+    transition:border-color 0.25s ease;
+  }
+  .web-shot-frame img{ width:100%; height:100%; object-fit:cover; object-position:top; display:block; }
+  .video-showcase-text{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    max-width:320px;
+  }
+  .video-showcase-text .name{ font-size:19px; }
+  .video-showcase-text .desc{ font-size:13px; line-height:1.5; }
+  .more-link-inline{
+    color:var(--green);
+    text-decoration:none;
+    font-weight:700;
+    font-size:13px;
+    margin-top:4px;
+  }
+  .more-link-inline:hover{ text-decoration:underline; }
+
+  .meta{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .name{ font-size:17px; font-weight:700; color:var(--white); font-family:'Rubik',sans-serif; }
+  .desc{ font-size:12.5px; color:var(--muted); }
+  .go{ margin-left:auto; color:var(--yellow); font-size:20px; transition:transform 0.25s ease; }
+  .card:hover .go{ transform:translateX(3px); }
+
+  .reach-out{
+    font-family:'Rubik', sans-serif;
+    font-weight:700;
+    font-size:clamp(16px, 1.9vw, 21px);
+    line-height:1.5;
+    color:var(--yellow);
+    max-width:40ch;
+    margin:28px 0 0 0;
+    position:relative;
+    z-index:2;
+  }
+
+  .footer{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:20px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+    max-width:680px;
+    position:relative;
+    z-index:2;
+  }
+
+  .more-link{
+    margin-top:18px;
+    font-size:13px;
+    color:var(--muted);
+    position:relative;
+    z-index:2;
+  }
+  .more-link a{
+    color:var(--green);
+    text-decoration:none;
+    font-weight:600;
+  }
+  .more-link a:hover{ text-decoration:underline; }
+
+  .contact-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:20px;
+    position:relative;
+    z-index:2;
+  }
+  .contact-pill{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:10px 16px;
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:30px;
+    color:var(--white);
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    transition:border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .contact-pill svg{ width:16px; height:16px; flex-shrink:0; }
+  .contact-pill:hover{ border-color:rgba(62,232,136,0.55); box-shadow:0 0 18px -6px rgba(62,232,136,0.4); }
+
+  /* ---------- NAV DOTS ---------- */
+
+  .dots{
+    position:fixed;
+    right:22px;
+    top:50%;
+    transform:translateY(-50%);
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+    z-index:20;
+  }
+  .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:rgba(62,232,136,0.28);
+    cursor:pointer;
+    transition:background 0.3s ease, height 0.3s ease;
+  }
+  .dot.active{ background:var(--green); height:22px; border-radius:4px; }
+</style>
+</head>
+<body>
+
+<div class="scroller" id="scroller">
+
+  <!-- SLIDE 1: INTRO -->
+  <section class="slide" id="slide0">
+    <div class="deco">
+      <span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span>
+      <svg class="ring1" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" stroke="#3ee888" stroke-width="1.4" fill="none"/></svg>
+      <svg class="tri" viewBox="0 0 40 40"><polygon points="20,4 36,34 4,34" stroke="#3ee888" stroke-width="1.4" fill="none"/></svg>
+    </div>
+    <div class="inner s1-inner">
+      <div class="s1-left">
+        <p class="headline">Don't have mastery in any subject yet.. but will someday</p>
+        <p class="subtext">Hi, I'm Shikhar Aryal — a beginner in almost everything, but a quick learner too 👀</p>
+      </div>
+      <div class="s1-right">
+        <div class="clip-frame">
+          <video id="clip" src="clip.mp4" muted playsinline autoplay preload="auto"></video>
+          <div class="play-overlay" id="playOverlay">
+            <svg viewBox="0 0 24 24" fill="#3ee888"><circle cx="12" cy="12" r="11" fill="rgba(0,0,0,0.5)" stroke="#3ee888" stroke-width="1.5"/><polygon points="10,8 16,12 10,16"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      scroll for more
+      <svg width="16" height="16" viewBox="0 0 24 24" stroke="#3ee888" stroke-width="2" fill="none" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: SKILLS -->
+  <section class="slide" id="slide1">
+    <div class="deco">
+      <span class="b1"></span><span class="b2"></span>
+      <svg class="ring1" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" stroke="#3ee888" stroke-width="1.4" fill="none"/></svg>
+    </div>
+    <div class="inner">
+      <p class="section-title">What I <span>work on</span></p>
+
+      <div class="video-showcase">
+        <div class="edit-clip-frame">
+          <video src="edit-example.mp4" muted playsinline loop autoplay preload="auto"></video>
+        </div>
+        <div class="video-showcase-text">
+          <span class="name">Video Editing</span>
+          <span class="desc">This is one of my own edits — if you want quality like this, DM me</span>
+          <a class="more-link-inline" href="https://www.instagram.com/shikhararyall/" target="_blank" rel="noopener">DM me on Instagram →</a>
+        </div>
+      </div>
+
+      <a class="video-showcase link-showcase" href="https://shikhar-aryal.github.io/gyanpunja/" target="_blank" rel="noopener">
+        <div class="web-shot-frame">
+          <img src="web-example.png" alt="Gyanpunja Boarding School website screenshot">
+        </div>
+        <div class="video-showcase-text">
+          <span class="name">Web Developing</span>
+          <span class="desc">My first ever website, built back when I was a class 8 student</span>
+          <span class="more-link-inline">See it live →</span>
+        </div>
+      </a>
+
+      <div class="grid single">
+        <div class="card">
+          <div class="thumb photo" style="background-image:url('https://images.unsplash.com/photo-1655945702696-e4ede55f938b?fm=jpg&q=60&w=400&auto=format&fit=crop')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="#3ee888" stroke="none"/><circle cx="14" cy="9" r="1" fill="#3ee888" stroke="none"/><path d="M8 14c1 2 3 3 5 2.5 1.4-.3 1-2 2.4-2.2 1-.1 1.6.5 2.1-.3.6-1-1-2-3-2"/></svg></div>
+          <div class="meta"><span class="name">Graphic Designing</span><span class="desc">Posters, thumbnails, and clean visuals</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: SOCIALS -->
+  <section class="slide" id="slide2">
+    <div class="deco">
+      <span class="b1"></span><span class="b2"></span>
+      <svg class="tri" viewBox="0 0 40 40"><polygon points="20,4 36,34 4,34" stroke="#3ee888" stroke-width="1.4" fill="none"/></svg>
+    </div>
+    <div class="inner">
+      <p class="section-title">Find me <span>online</span></p>
+      <div class="grid">
+        <a class="card" href="https://www.instagram.com/shikhararyall/" target="_blank" rel="noopener">
+          <div class="thumb photo" style="background-image:url('https://images.unsplash.com/photo-1679445220248-5a60e5081739?fm=jpg&q=60&w=400&auto=format&fit=crop')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="#3ee888" stroke="none"/></svg></div>
+          <div class="meta"><span class="name">Instagram</span><span class="desc">@shikhararyall</span></div>
+          <span class="go">→</span>
+        </a>
+        <a class="card" href="https://www.tiktok.com/@shikhar.01" target="_blank" rel="noopener">
+          <div class="thumb photo" style="background-image:url('https://images.unsplash.com/photo-1746014601552-4ed3d01da7e8?fm=jpg&q=60&w=400&auto=format&fit=crop')"><svg viewBox="0 0 24 24"><path d="M14 3v10.5a3.5 3.5 0 1 1-3-3.46"/><path d="M14 3c0 2.5 2 4.5 4.5 4.5"/></svg></div>
+          <div class="meta"><span class="name">TikTok</span><span class="desc">@shikhar.01</span></div>
+          <span class="go">→</span>
+        </a>
+        <a class="card" href="https://www.facebook.com/shikhararyall" target="_blank" rel="noopener">
+          <div class="thumb photo" style="background-image:url('https://images.unsplash.com/photo-1656164631076-5052b84f9152?fm=jpg&q=60&w=400&auto=format&fit=crop')"><svg viewBox="0 0 24 24"><path d="M15 8h-2a2 2 0 0 0-2 2v2H9v3h2v6h3v-6h2.2l.8-3H14v-1.5a1 1 0 0 1 1-1H16z"/></svg></div>
+          <div class="meta"><span class="name">Facebook</span><span class="desc">shikhararyall</span></div>
+          <span class="go">→</span>
+        </a>
+      </div>
+      <p class="reach-out">I am also a beginner, but not a new one — so feel free to reach out if you're confused on something</p>
+      <div class="contact-row">
+        <a class="contact-pill" href="mailto:ranktone-021@gmail.com">
+          <svg viewBox="0 0 24 24" stroke="#3ee888" stroke-width="1.8" fill="none"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          ranktone-021@gmail.com
+        </a>
+      </div>
+      <p class="footer">© 2083 Shikhar Aryal. All rights reserved.</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="dots">
+  <div class="dot active" data-i="0"></div>
+  <div class="dot" data-i="1"></div>
+  <div class="dot" data-i="2"></div>
+</div>
+
+<script>
+  const scroller = document.getElementById('scroller');
+  const dots = document.querySelectorAll('.dot');
+  const slides = [document.getElementById('slide0'), document.getElementById('slide1'), document.getElementById('slide2')];
+  const video = document.getElementById('clip');
+
+  dots.forEach(d => d.addEventListener('click', () => {
+    slides[parseInt(d.dataset.i)].scrollIntoView({behavior:'smooth'});
+  }));
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const i = slides.indexOf(entry.target);
+      if(entry.isIntersecting && entry.intersectionRatio > 0.5){
+        dots.forEach((d, di) => d.classList.toggle('active', di === i));
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, { threshold: [0.5] });
+
+  slides.forEach(s => observer.observe(s));
+
+  video.addEventListener('ended', () => {
+    video.pause();
+    video.currentTime = Math.max(0, video.duration - 0.03);
+  });
+
+  const playOverlay = document.getElementById('playOverlay');
+
+  function attemptPlay(){
+    video.muted = true;
+    const p = video.play();
+    if(p !== undefined){
+      p.then(() => { playOverlay.classList.remove('show'); })
+       .catch(() => { playOverlay.classList.add('show'); });
+    }
+  }
+
+  video.addEventListener('loadedmetadata', attemptPlay);
+  video.addEventListener('canplay', attemptPlay);
+  document.addEventListener('DOMContentLoaded', attemptPlay);
+  attemptPlay();
+
+  // any tap/click anywhere on the page will also try to resume the clip
+  ['click','touchstart'].forEach(evt => {
+    document.addEventListener(evt, () => { attemptPlay(); }, { once:true, passive:true });
+  });
+
+  playOverlay.addEventListener('click', (e) => {
+    e.stopPropagation();
+    attemptPlay();
+  });
+</script>
+
+</body>
+</html>
